@@ -29,7 +29,7 @@ Warning: the project is actually in dev status! So you have to add the repositor
    ],
    "require": {
      ...
-     "nmarniesse/phindexer": "@dev"
+     "nmarniesse/phindexer": "dev-master"
    }
    ...
  }
