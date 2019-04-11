@@ -55,7 +55,7 @@ class BtreeStorage implements StorageInterface
      */
     public function addItemInStorage(&$item): StorageInterface
     {
-        $value = (string) $this->expression_index->getExpressionResult($item);
+        $value = static::sanitize($this->expression_index->getExpressionResult($item));
 
         if (!array_key_exists($value, $this->storage)) {
             $this->storage[$value] = [];
@@ -67,11 +67,28 @@ class BtreeStorage implements StorageInterface
     }
 
     /**
-     * @param string $value
+     * @param mixed $value
      * @return array
      */
-    public function getResults(string $value): array
+    public function getResults($value): array
     {
-        return $this->storage[(string) $value] ?? [];
+        return $this->storage[static::sanitize($value)] ?? [];
+    }
+
+    /**
+     * @param $value
+     * @return false|string
+     */
+    private static function sanitize($value)
+    {
+        if (is_bool($value)) {
+            return $value ? 1 : 0;
+        }
+
+        if (is_string($value) || is_numeric($value)) {
+            return $value;
+        }
+
+        return json_encode($value);
     }
 }

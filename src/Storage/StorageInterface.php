@@ -31,8 +31,8 @@ interface StorageInterface
     public function addItemInStorage(&$item): StorageInterface;
 
     /**
-     * @param string $value
+     * @param mixed $value
      * @return array
      */
-    public function getResults(string $value): array;
+    public function getResults($value): array;
 }

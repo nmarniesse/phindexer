@@ -135,11 +135,15 @@ class Collection implements \Iterator
 
     /**
      * @param ExpressionIndex $expression
-     * @param string          $value
+     * @param mixed           $value
      * @return Collection
      */
-    public function findWhereExpression(ExpressionIndex $expression, string $value): Collection
+    public function findWhereExpression(ExpressionIndex $expression, $value): Collection
     {
+        if (!array_key_exists($expression->getFingerprint(), $this->index_storages)) {
+            $this->addExpressionIndex($expression);
+        }
+
         return new Collection($this->index_storages[$expression->getFingerprint()]->getResults($value));
     }
 
