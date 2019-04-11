@@ -71,7 +71,7 @@ class Collection extends test
                 ->object($res)->isInstanceOf(TestedClass::class)
                 ->boolean($this->collectionIsEmpty($res))->isTrue
 
-            ->assert('Create index if not created and return rows kinked to a category.')
+            ->assert('Create index if not created and return rows linked to a category.')
             ->and($tested_instance->addColumnIndex('category'))
             ->when($res = $tested_instance->findWhere('name', 'A'))
                 ->object($res)->isInstanceOf(TestedClass::class)
@@ -126,7 +126,7 @@ class Collection extends test
     public function testFindWhereExpression()
     {
         $this
-            ->assert('Use index to return rows kinked to a category.')
+            ->assert('Use index to return results.')
             ->given($tested_instance = new TestedClass(FixtureProvider::getAssociativeArray()))
             ->and($expression = new ExpressionIndex(function ($item) {
                 foreach (['price', 'category'] as $column) {
