@@ -6,6 +6,7 @@
     "authors":  [{ "name": "Nicolas Marniesse", "email": "nicolas.marniesse@gmail.com"}],
     "require": {
         "php": ">=7.1",
+        "ext-json": "*",
         "psr/log": "~1.0",
         "ramsey/uuid": "^3.8"
     },

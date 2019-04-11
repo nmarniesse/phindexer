@@ -10,6 +10,7 @@
 namespace NMarniesse\Phindexer\Storage;
 
 use NMarniesse\Phindexer\Collection;
+use NMarniesse\Phindexer\IndexSanitizer;
 use NMarniesse\Phindexer\IndexType\ExpressionIndex;
 
 /**
@@ -55,7 +56,7 @@ class BtreeStorage implements StorageInterface
      */
     public function addItemInStorage(&$item): StorageInterface
     {
-        $value = static::sanitize($this->expression_index->getExpressionResult($item));
+        $value = IndexSanitizer::sanitize($this->expression_index->getExpressionResult($item));
 
         if (!array_key_exists($value, $this->storage)) {
             $this->storage[$value] = [];
@@ -72,23 +73,6 @@ class BtreeStorage implements StorageInterface
      */
     public function getResults($value): array
     {
-        return $this->storage[static::sanitize($value)] ?? [];
-    }
-
-    /**
-     * @param $value
-     * @return false|string
-     */
-    private static function sanitize($value)
-    {
-        if (is_bool($value)) {
-            return $value ? 1 : 0;
-        }
-
-        if (is_string($value) || is_numeric($value)) {
-            return $value;
-        }
-
-        return json_encode($value);
+        return $this->storage[IndexSanitizer::sanitize($value)] ?? [];
     }
 }
