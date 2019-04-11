@@ -1,0 +1,26 @@
+{
+    "name": "nmarniesse/phindexer",
+    "type": "library",
+    "description": "PHP data indexer",
+    "license": "MIT",
+    "authors":  [{ "name": "Nicolas Marniesse", "email": "nicolas.marniesse@gmail.com"}],
+    "require": {
+        "php": ">=7.1",
+        "psr/log": "~1.0",
+        "ramsey/uuid": "^3.8"
+    },
+    "require-dev": {
+        "atoum/atoum" : "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "NMarniesse\\Phindexer\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "NMarniesse\\Phindexer\\Test\\Unit\\": "tests/Unit"
+        }
+    },
+    "minimum-stability": "stable"
+}
