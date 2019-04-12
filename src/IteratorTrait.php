@@ -17,10 +17,10 @@ namespace NMarniesse\Phindexer;
 trait IteratorTrait
 {
     /** @var \iterable */
-    private $iterator;
+    protected $iterator;
 
     /** @var int */
-    private $position = 0;
+    protected $position = 0;
 
     /**
      * rewind

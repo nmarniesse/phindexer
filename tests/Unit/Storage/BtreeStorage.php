@@ -10,7 +10,7 @@
 namespace NMarniesse\Phindexer\Test\Unit\Storage;
 
 use atoum\test;
-use NMarniesse\Phindexer\Collection;
+use NMarniesse\Phindexer\Collection\ArrayCollection;
 use NMarniesse\Phindexer\IndexType\ExpressionIndex;
 use NMarniesse\Phindexer\Storage\BtreeStorage as TestedClass;
 
@@ -18,7 +18,7 @@ use NMarniesse\Phindexer\Storage\BtreeStorage as TestedClass;
  * Class BtreeStorage
  *
  * @package NMarniesse\Phindexer\Test\Unit\Storage
- * @author  Nicolas Marniesse <nicolas.marniesse@phc-holding.com>
+ * @author  Nicolas Marniesse <nicolas.marniesse@gmail.com>
  */
 class BtreeStorage extends test
 {
@@ -87,7 +87,7 @@ class BtreeStorage extends test
             })
             ->and($expression_index = new ExpressionIndex($callable))
             ->and($tested_instance = new TestedClass($expression_index))
-            ->and($collection = new Collection([
+            ->and($collection = new ArrayCollection([
                 ['id' => 12],
                 ['id' => 20],
             ]))
@@ -95,7 +95,7 @@ class BtreeStorage extends test
                 ->object($res)->isInstanceOf(TestedClass::class)
 
             ->assert('Add bad item in the storage.')
-            ->and($collection = new Collection([
+            ->and($collection = new ArrayCollection([
                 ['name' => 'test'],
                 ['name' => 'test2'],
             ]))
@@ -122,7 +122,7 @@ class BtreeStorage extends test
             })
             ->and($expression_index = new ExpressionIndex($callable))
             ->and($tested_instance = new TestedClass($expression_index))
-            ->and($collection = new Collection([
+            ->and($collection = new ArrayCollection([
                 ['id' => 12],
                 ['id' => 20],
             ]))

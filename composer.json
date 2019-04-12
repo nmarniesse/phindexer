@@ -8,7 +8,8 @@
         "php": ">=7.1",
         "ext-json": "*",
         "psr/log": "~1.0",
-        "ramsey/uuid": "^3.8"
+        "ramsey/uuid": "^3.8",
+        "symfony/validator": "^4.2"
     },
     "require-dev": {
         "atoum/atoum" : "*"

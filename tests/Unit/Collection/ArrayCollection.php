@@ -7,21 +7,37 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace NMarniesse\Phindexer\Test\Unit;
+namespace NMarniesse\Phindexer\Test\Unit\Collection;
 
 use atoum\test;
-use NMarniesse\Phindexer\Collection as TestedClass;
+use NMarniesse\Phindexer\Collection\ArrayCollection as TestedClass;
 use NMarniesse\Phindexer\IndexType\ExpressionIndex;
-use NMarniesse\Phindexer\Test\Unit\Fixture\FixtureProvider;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class Collection
  *
- * @package NMarniesse\Phindexer\Test\Unit
- * @author  Nicolas Marniesse <nicolas.marniesse@phc-holding.com>
+ * @package NMarniesse\Phindexer\Test\Unit\Collection
+ * @author  Nicolas Marniesse <nicolas.marniesse@gmail.com>
  */
-class Collection extends test
+class ArrayCollection extends test
 {
+    /**
+     * Returns a collection of associative arrays.
+     *
+     * @return array
+     */
+    public static function getAssociativeArray(): array
+    {
+        return [
+            ['id' => 1, 'name' => 'A', 'category' => 'enceinte', 'price' => 60],
+            ['id' => 2, 'name' => 'B', 'category' => 'enceinte', 'price' => 80],
+            ['id' => 3, 'name' => 'C', 'category' => 'ampli', 'price' => 10],
+            ['id' => 4, 'name' => 'D', 'category' => 'enceinte', 'price' => 40],
+            ['id' => 5, 'name' => 'E', 'category' => null, 'price' => 50],
+        ];
+    }
+
     /**
      * testConstruct
      */
@@ -29,8 +45,36 @@ class Collection extends test
     {
         $this
             ->assert('Test constructor of Collection class.')
-            ->when($tested_instance = new TestedClass(FixtureProvider::getAssociativeArray()))
+            ->when($tested_instance = new TestedClass(static::getAssociativeArray()))
                 ->object($tested_instance)->isInstanceOf(TestedClass::class)
+
+            ->assert('Test constructor of Collection class with constraint.')
+            ->given($constraint = new Assert\Collection([
+                'id'       => new Assert\NotBlank(),
+                'name'     => new Assert\NotBlank(),
+                'category' => new Assert\Optional(),
+                'price'    => [
+                    new Assert\NotBlank(),
+                    new Assert\Type('numeric'),
+                ],
+            ]))
+            ->when($tested_instance = new TestedClass(static::getAssociativeArray(), $constraint))
+                ->object($tested_instance)->isInstanceOf(TestedClass::class)
+
+            ->assert('Test constructor of Collection class with constraint.')
+            ->given($constraint = new Assert\Collection([
+                'id'       => new Assert\NotBlank(),
+                'name'     => new Assert\NotBlank(),
+                'category' => new Assert\NotBlank(),
+                'price'    => [
+                    new Assert\NotBlank(),
+                    new Assert\Type('numeric'),
+                ],
+            ]))
+            ->exception(function () use ($constraint) {
+                return new TestedClass(static::getAssociativeArray(), $constraint);
+            })
+                ->isInstanceOf(\RuntimeException::class)->message->contains('Validation fails:')
             ;
     }
 
@@ -41,7 +85,7 @@ class Collection extends test
     {
         $this
             ->assert('A column index can be added.')
-            ->given($tested_instance = new TestedClass(FixtureProvider::getAssociativeArray()))
+            ->given($tested_instance = new TestedClass(static::getAssociativeArray()))
             ->when($res = $tested_instance->addColumnIndex('category'))
                 ->object($res)->isInstanceOf(TestedClass::class)
 
@@ -60,7 +104,7 @@ class Collection extends test
     {
         $this
             ->assert('Use index to return rows kinked to a category.')
-            ->given($tested_instance = new TestedClass(FixtureProvider::getAssociativeArray()))
+            ->given($tested_instance = new TestedClass(static::getAssociativeArray()))
             ->and($tested_instance->addColumnIndex('category'))
             ->when($res = $tested_instance->findWhere('category', 'enceinte'))
                 ->object($res)->isInstanceOf(TestedClass::class)
@@ -91,7 +135,7 @@ class Collection extends test
     {
         $this
             ->assert('An expression index can be added.')
-            ->given($tested_instance = new TestedClass(FixtureProvider::getAssociativeArray()))
+            ->given($tested_instance = new TestedClass(static::getAssociativeArray()))
             ->and($expression = new ExpressionIndex(function ($item) {
                 foreach (['price', 'category'] as $column) {
                     if (!array_key_exists($column, $item)) {
@@ -127,7 +171,7 @@ class Collection extends test
     {
         $this
             ->assert('Use index to return results.')
-            ->given($tested_instance = new TestedClass(FixtureProvider::getAssociativeArray()))
+            ->given($tested_instance = new TestedClass(static::getAssociativeArray()))
             ->and($expression = new ExpressionIndex(function ($item) {
                 foreach (['price', 'category'] as $column) {
                     if (!array_key_exists($column, $item)) {

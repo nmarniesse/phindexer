@@ -9,15 +9,15 @@
  */
 namespace NMarniesse\Phindexer\Storage;
 
-use NMarniesse\Phindexer\Collection;
 use NMarniesse\Phindexer\IndexSanitizer;
+use NMarniesse\Phindexer\CollectionInterface;
 use NMarniesse\Phindexer\IndexType\ExpressionIndex;
 
 /**
  * Class BtreeIndex
  *
  * @package NMarniesse\Phindexer\Storage
- * @author  Nicolas Marniesse <nicolas.marniesse@phc-holding.com>
+ * @author  Nicolas Marniesse <nicolas.marniesse@gmail.com>
  */
 class BtreeStorage implements StorageInterface
 {
@@ -38,10 +38,10 @@ class BtreeStorage implements StorageInterface
     }
 
     /**
-     * @param Collection $collection
+     * @param CollectionInterface $collection
      * @return StorageInterface
      */
-    public function addCollectionInStorage(Collection $collection): StorageInterface
+    public function addCollectionInStorage(CollectionInterface $collection): StorageInterface
     {
         foreach ($collection as $item) {
             $this->addItemInStorage($item);

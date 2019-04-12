@@ -41,7 +41,7 @@ Warning: the project is actually in dev status! So you have to add the repositor
 ### Index and search on columns
 
 ```php
-use NMarniesse\Phindexer\Collection;
+use NMarniesse\Phindexer\Collection\ArrayCollection;
 
 $list = [
     ['id' => 1, 'name' => 'A', 'category' => 'enceinte', 'price' => 60],
@@ -51,11 +51,11 @@ $list = [
     ['id' => 5, 'name' => 'E', 'category' => null, 'price' => 50],
 ];
 
-$collection = new Collection($list);
+$collection = new ArrayCollection($list);
 $collection->addColumnIndex('category');
 $results = $collection->findWhere('category', 'enceinte');
 
-// Results is an new instance of Collection that contains the results
+// Results is an new instance of ArrayCollection that contains the results
 foreach ($results as $result) {
     print_r($result);
 }
