@@ -13,7 +13,7 @@ use NMarniesse\Phindexer\AbstractCollection;
 use NMarniesse\Phindexer\CollectionInterface;
 use NMarniesse\Phindexer\IndexType\ExpressionIndex;
 use NMarniesse\Phindexer\Storage\StorageInterface;
-use NMarniesse\Phindexer\Util\InflectorBuilder;
+use NMarniesse\Phindexer\Util\InflectorFactory;
 
 /**
  * Class ObjectCollection
@@ -25,7 +25,9 @@ use NMarniesse\Phindexer\Util\InflectorBuilder;
  */
 class ObjectCollection extends AbstractCollection implements CollectionInterface
 {
-    /** @var array */
+    /**
+     * @var array
+     */
     protected $property_fingerprints = [];
 
     /**
@@ -76,7 +78,7 @@ class ObjectCollection extends AbstractCollection implements CollectionInterface
                 return $item->$property_name;
             }
 
-            $inflector = InflectorBuilder::build();
+            $inflector = InflectorFactory::build();
             $method    = $inflector->camelize(sprintf('get_%s', $property_name));
             if (method_exists($item, $method)) {
                 return $item->$method();

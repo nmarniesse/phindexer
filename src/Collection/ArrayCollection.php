@@ -24,7 +24,9 @@ use NMarniesse\Phindexer\Storage\StorageInterface;
  */
 class ArrayCollection extends AbstractCollection implements CollectionInterface
 {
-    /** @var array */
+    /**
+     * @var array
+     */
     protected $fingerprints = [];
 
     /**

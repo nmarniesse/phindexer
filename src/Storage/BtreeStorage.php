@@ -9,7 +9,7 @@
  */
 namespace NMarniesse\Phindexer\Storage;
 
-use NMarniesse\Phindexer\IndexSanitizer;
+use NMarniesse\Phindexer\Util\IndexSanitizer;
 use NMarniesse\Phindexer\CollectionInterface;
 use NMarniesse\Phindexer\IndexType\ExpressionIndex;
 

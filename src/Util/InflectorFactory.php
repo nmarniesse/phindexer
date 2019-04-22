@@ -17,8 +17,13 @@ use Doctrine\Common\Inflector\Inflector;
  * @package NMarniesse\Phindexer\Util
  * @author Nicolas Marniesse <nicolas.marniesse@gmail.com>
  */
-class InflectorBuilder
+class InflectorFactory
 {
+    /**
+     * build
+     *
+     * @return Inflector
+     */
     public static function build(): Inflector
     {
         return new Inflector();

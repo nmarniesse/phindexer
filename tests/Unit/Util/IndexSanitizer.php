@@ -7,10 +7,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace NMarniesse\Phindexer\Test\Unit;
+namespace NMarniesse\Phindexer\Test\Unit\Util;
 
 use atoum\test;
-use NMarniesse\Phindexer\IndexSanitizer as TestedClass;
+use NMarniesse\Phindexer\Util\IndexSanitizer as TestedClass;
 
 /**
  * Class IndexSanitizer

@@ -21,14 +21,18 @@ use Symfony\Component\Validator\Constraint;
  * @package NMarniesse\Phindexer
  * @author  Nicolas Marniesse <nicolas.marniesse@gmail.com>
  */
-abstract class AbstractCollection implements \Iterator
+abstract class AbstractCollection implements \Iterator, CollectionInterface
 {
     use IteratorTrait;
 
-    /** @var array */
+    /**
+     * @var array
+     */
     protected $index_storages = [];
 
-    /** @var Constraint|null */
+    /**
+     * @var Constraint|null
+     */
     protected $constraint;
 
     /**
