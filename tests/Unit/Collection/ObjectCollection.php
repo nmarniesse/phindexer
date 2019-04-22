@@ -224,7 +224,7 @@ class ObjectCollection extends test
 
             ->assert('Add bad item.')
             ->given($item = new \stdClass)
-            ->and($item->name = 'Pluton')
+            ->and($item->name = 'Pluto')
             ->and($item->system = 'Solar system')
             ->exception(function () use ($tested_instance, $item) {
                 $tested_instance->addItem($item);
