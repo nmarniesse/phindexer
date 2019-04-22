@@ -43,7 +43,6 @@ Warning: the project is actually in dev status! So you have to add the repositor
 ```php
 use NMarniesse\Phindexer\Collection\ArrayCollection;
 
-// $list can be an array or an iterator
 $list = [
     ['id' => 1, 'name' => 'A', 'category' => 'enceinte', 'price' => 60],
     ['id' => 2, 'name' => 'B', 'category' => 'enceinte', 'price' => 80],
@@ -54,22 +53,35 @@ $list = [
 
 $collection = new ArrayCollection($list);
 
-// Index on column
 $collection->addColumnIndex('category');
 $results = $collection->findWhere('category', 'enceinte');
 
 // Results is an new instance of ArrayCollection that contains the results
-// Print rows with ids 1, 2 and 3.
 foreach ($results as $result) {
     print_r($result);
 }
+```
 
-// Index with custom expression
+
+### Using custom index
+
+Maybe you want index your data with more complex condition. You can pass the function you want with
+expression index:
+
+```php
+// Create the custom index
 $expression_index = new ExpressionIndex(function (array $item) {
     return $item['category'] === 'enceinte' && $item['price'] <= 50;
 });
+
+// Add the index in your collection
 $collection->addExpressionIndex($expression_index);
+
+// Search using the index
 $results = $collection->findWhereExpression($expression_index, true);
+
+// Search the items that do not satisfied the expression index
+$results = $collection->findWhereExpression($expression_index, false);
 
 ```
 
