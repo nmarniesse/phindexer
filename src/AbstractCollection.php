@@ -14,7 +14,6 @@ use NMarniesse\Phindexer\Storage\BtreeStorage;
 use NMarniesse\Phindexer\Storage\StorageInterface;
 use NMarniesse\Phindexer\Validator\ValidatorFactory;
 use Symfony\Component\Validator\Constraint;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class AbstractCollection
