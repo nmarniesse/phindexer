@@ -205,6 +205,35 @@ class ObjectCollection extends test
     }
 
     /**
+     * testAddItem
+     */
+    public function testAddItem()
+    {
+        $this
+            ->assert('Add items and check they are indexed.')
+            ->given($constraint = new Assert\Type(['type' => Planet::class]))
+            ->and($tested_instance = new TestedClass(static::getPlanetCollection(), $constraint))
+            ->and($tested_instance->addPropertyIndex('system'))
+            ->and($tested_instance->addItem(new Planet('Uranus', 'Solar system', 30698)))
+            ->and($tested_instance->addItem(new Planet('Trappist-1 b', 'Trappist-1 system', 30698)))
+            ->when($res = $tested_instance->findWhere('system', 'Solar system'))
+                ->object($res)->isInstanceOf(TestedClass::class)
+                ->boolean($this->collectionIsEmpty($res))->isFalse
+                ->boolean($this->containsPlanet($res, 'Uranus'))->isTrue
+                ->boolean($this->containsPlanet($res, 'Trappist-1 b'))->isFalse
+
+            ->assert('Add bad item.')
+            ->given($item = new \stdClass)
+            ->and($item->name = 'Pluton')
+            ->and($item->system = 'Solar system')
+            ->exception(function () use ($tested_instance, $item) {
+                $tested_instance->addItem($item);
+            })
+                ->isInstanceOf(\RuntimeException::class)->message->contains('This value should be of type')
+            ;
+    }
+
+    /**
      * @param TestedClass $collection
      * @param string      $property
      * @param string      $value

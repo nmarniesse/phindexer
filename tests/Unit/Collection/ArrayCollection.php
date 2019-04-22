@@ -207,6 +207,56 @@ class ArrayCollection extends test
     }
 
     /**
+     * testAddItem
+     */
+    public function testAddItem()
+    {
+        $this
+            ->assert('Add items and check they are indexed.')
+            ->given($constraint = new Assert\Collection([
+                'id'       => new Assert\NotBlank(),
+                'name'     => new Assert\NotBlank(),
+                'category' => new Assert\Type('string'),
+                'price'    => [
+                    new Assert\NotBlank(),
+                    new Assert\Type('numeric'),
+                ],
+            ]))
+            ->and($tested_instance = new TestedClass(static::getAssociativeArray(), $constraint))
+            ->and($tested_instance->addColumnIndex('category'))
+            ->and($tested_instance->addItem([
+                'id'       => 10,
+                'name'     => 'J',
+                'category' => 'enceinte',
+                'price'    => 48,
+            ]))
+            ->and($tested_instance->addItem([
+                'id'       => 11,
+                'name'     => 'K',
+                'category' => 'ampli',
+                'price'    => 48,
+            ]))
+            ->when($res = $tested_instance->findWhere('category', 'enceinte'))
+                ->object($res)->isInstanceOf(TestedClass::class)
+                ->boolean($this->contains($res, 10))->isTrue
+                ->boolean($this->contains($res, 11))->isFalse
+
+            ->assert('Add bad item.')
+            ->exception(function () use ($tested_instance) {
+                $tested_instance->addItem([
+                    'id'       => 11,
+                    'name'     => 'K',
+                    'category' => 'ampli',
+                ]);
+            })
+                ->isInstanceOf(\RuntimeException::class)
+                    ->message
+                        ->contains('Array[price]')
+                        ->contains('This field is missing')
+            ;
+    }
+
+    /**
      * @param TestedClass $collection
      * @param string      $column
      * @param string      $value
