@@ -107,8 +107,13 @@ class ObjectCollection extends test
             ->exception(function () use ($tested_instance) {
                 $tested_instance->addPropertyIndex('unknown');
             })
-                ->isInstanceOf(\ReflectionException::class)->message->contains('Property unknown does not exist');
-            ;
+                ->isInstanceOf(\ReflectionException::class)->message->contains('Property unknown does not exist')
+
+            ->assert('A property index can be added if property is private but public access method exists.')
+            ->given($tested_instance = new TestedClass(static::getPlanetCollection()))
+            ->when($res = $tested_instance->addPropertyIndex('system'))
+                ->object($res)->isInstanceOf(TestedClass::class)
+        ;
     }
 
     /**

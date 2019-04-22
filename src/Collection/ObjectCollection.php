@@ -13,6 +13,7 @@ use NMarniesse\Phindexer\AbstractCollection;
 use NMarniesse\Phindexer\CollectionInterface;
 use NMarniesse\Phindexer\IndexType\ExpressionIndex;
 use NMarniesse\Phindexer\Storage\StorageInterface;
+use NMarniesse\Phindexer\Util\InflectorBuilder;
 
 /**
  * Class ObjectCollection
@@ -33,16 +34,7 @@ class ObjectCollection extends AbstractCollection implements CollectionInterface
      */
     public function addPropertyIndex(string $property): CollectionInterface
     {
-        $expression = new ExpressionIndex(function ($item) use ($property) {
-            $reflection = new \ReflectionObject($item);
-            $property_object = $reflection->getProperty($property);
-            if ($property_object instanceof \ReflectionProperty && $property_object->isPublic()) {
-                return $item->$property;
-            }
-
-            throw new \RuntimeException(sprintf('Undefined public property: %s', $property));
-        });
-
+        $expression = $this->buildIndex($property);
         $this->property_fingerprints[$property] = $expression->getFingerprint();
 
         return $this->addExpressionIndex($expression);
@@ -67,5 +59,30 @@ class ObjectCollection extends AbstractCollection implements CollectionInterface
         }
 
         return new ObjectCollection($storage->getResults($value));
+    }
+
+    /**
+     * buildIndex
+     *
+     * @param string $property_name
+     * @return ExpressionIndex
+     */
+    protected function buildIndex(string $property_name): ExpressionIndex
+    {
+        return new ExpressionIndex(function ($item) use ($property_name) {
+            $reflection = new \ReflectionObject($item);
+            $property_object = $reflection->getProperty($property_name);
+            if ($property_object instanceof \ReflectionProperty && $property_object->isPublic()) {
+                return $item->$property_name;
+            }
+
+            $inflector = InflectorBuilder::build();
+            $method    = $inflector->camelize(sprintf('get_%s', $property_name));
+            if (method_exists($item, $method)) {
+                return $item->$method();
+            }
+
+            throw new \RuntimeException(sprintf('Undefined property: %s', $property_name));
+        });
     }
 }

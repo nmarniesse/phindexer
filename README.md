@@ -76,7 +76,7 @@ $list = [
 
 $collection = new ObjectCollection($list);
 
-// Index with property
+// Index with property (private properties can be indexed if method "get" is accessible, here method "getSystem")
 $collection->addColumnIndex('system');
 $results = $collection->findWhere('system', 'Solar system');
 
