@@ -21,10 +21,14 @@ use NMarniesse\Phindexer\IndexType\ExpressionIndex;
  */
 class BtreeStorage implements StorageInterface
 {
-    /** @var array */
+    /**
+     * @var array
+     */
     private $storage = [];
 
-    /** @var ExpressionIndex */
+    /**
+     * @var ExpressionIndex
+     */
     private $expression_index;
 
     /**
