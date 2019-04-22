@@ -64,28 +64,12 @@ class ObjectCollection extends test
                 ->object($tested_instance)->isInstanceOf(TestedClass::class)
 
             ->assert('Test constructor of Collection class with constraint.')
-            ->given($constraint = new Assert\Collection([
-                'id'       => new Assert\NotBlank(),
-                'name'     => new Assert\NotBlank(),
-                'category' => new Assert\Optional(),
-                'price'    => [
-                    new Assert\NotBlank(),
-                    new Assert\Type('numeric'),
-                ],
-            ]))
+            ->given($constraint = new Assert\Type(['type' => '\stdClass']))
             ->when($tested_instance = new TestedClass(static::getObjects(), $constraint))
                 ->object($tested_instance)->isInstanceOf(TestedClass::class)
 
-            ->assert('Test constructor of Collection class with constraint.')
-            ->given($constraint = [
-                'id'       => new Assert\NotBlank(),
-                'name'     => new Assert\NotBlank(),
-                'category' => new Assert\NotBlank(),
-                'price'    => [
-                    new Assert\NotBlank(),
-                    new Assert\Type('numeric'),
-                ],
-            ])
+            ->assert('Test constructor of Collection class fails with constraint.')
+            ->given($constraint = new Assert\Type(['type' => '\Iterator']))
             ->exception(function () use ($constraint) {
                 return new TestedClass(static::getObjects(), $constraint);
             })

@@ -36,9 +36,9 @@ abstract class AbstractCollection implements \Iterator
      * ArrayCollection constructor.
      *
      * @param iterable               $iterator
-     * @param Assert\Collection|null $constraint
+     * @param Constraint|null $constraint
      */
-    public function __construct(iterable $iterator, Assert\Collection $constraint = null)
+    public function __construct(iterable $iterator, Constraint $constraint = null)
     {
         $this->iterator   = $iterator;
         $this->position   = 0;

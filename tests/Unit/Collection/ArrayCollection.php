@@ -61,7 +61,7 @@ class ArrayCollection extends test
             ->when($tested_instance = new TestedClass(static::getAssociativeArray(), $constraint))
                 ->object($tested_instance)->isInstanceOf(TestedClass::class)
 
-            ->assert('Test constructor of Collection class with constraint.')
+            ->assert('Test constructor of Collection class fails with constraint.')
             ->given($constraint = new Assert\Collection([
                 'id'       => new Assert\NotBlank(),
                 'name'     => new Assert\NotBlank(),
