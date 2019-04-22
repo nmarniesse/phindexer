@@ -36,12 +36,12 @@ Warning: the project is actually in dev status! So you have to add the repositor
 ```
 
 
-## Usage
+## Documentation
 
 ### Index and search on columns
 
 ```php
-use NMarniesse\Phindexer\Collection;
+use NMarniesse\Phindexer\Collection\ArrayCollection;
 
 $list = [
     ['id' => 1, 'name' => 'A', 'category' => 'enceinte', 'price' => 60],
@@ -51,11 +51,11 @@ $list = [
     ['id' => 5, 'name' => 'E', 'category' => null, 'price' => 50],
 ];
 
-$collection = new Collection($list);
+$collection = new ArrayCollection($list);
 $collection->addColumnIndex('category');
 $results = $collection->findWhere('category', 'enceinte');
 
-// Results is an new instance of Collection that contains the results
+// Results is an new instance of ArrayCollection that contains the results
 foreach ($results as $result) {
     print_r($result);
 }
@@ -63,3 +63,25 @@ foreach ($results as $result) {
 // Print rows with ids 1, 2 and 3.
 
 ```
+
+
+### Using objects
+
+
+$list = [
+   new Planet('Earth', 'Solar system'),
+   new Planet('Mars', 'Solar system'),
+   new Planet('Kepler 186-f', 'Kepler 186 system'),
+];
+
+$collection = new ObjectCollection($list);
+
+// Index with property (private properties can be indexed if method "get" is accessible, here method "getSystem")
+$collection->addColumnIndex('system');
+$results = $collection->findWhere('system', 'Solar system');
+
+// Index with expression
+$collection->addExpressionIndex(new ExpressionIndex(function (Planet $planet) {
+    return $planet->getSystem() === 'Solar system';
+}));
+

@@ -15,7 +15,7 @@ use Ramsey\Uuid\Uuid;
  * Class ExpressionIndex
  *
  * @package NMarniesse\Phindexer\IndexType
- * @author  Nicolas Marniesse <nicolas.marniesse@phc-holding.com>
+ * @author  Nicolas Marniesse <nicolas.marniesse@gmail.com>
  */
 class ExpressionIndex
 {

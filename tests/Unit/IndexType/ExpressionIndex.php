@@ -16,7 +16,7 @@ use NMarniesse\Phindexer\IndexType\ExpressionIndex as TestedClass;
  * Class ExpressionIndex
  *
  * @package NMarniesse\Phindexer\Test\Unit\IndexType
- * @author  Nicolas Marniesse <nicolas.marniesse@phc-holding.com>
+ * @author  Nicolas Marniesse <nicolas.marniesse@gmail.com>
  */
 class ExpressionIndex extends test
 {
