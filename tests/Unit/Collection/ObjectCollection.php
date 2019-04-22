@@ -52,6 +52,21 @@ class ObjectCollection extends test
     }
 
     /**
+     * getPlanetCollection
+     *
+     * @return \Iterator
+     */
+    public static function getPlanetCollection(): \Iterator
+    {
+        return new \ArrayIterator([
+            new Planet('Earth', 'Solar system', 365),
+            new Planet('Mars', 'Solar system', 686.885),
+            new Planet('Venus', 'Solar system', 583.92),
+            new Planet('Kepler 186-f', 'Kepler 186 system', 129.9),
+        ]);
+    }
+
+    /**
      * testConstruct
      *
      * @tags mine
@@ -134,36 +149,12 @@ class ObjectCollection extends test
     {
         $this
             ->assert('An expression index can be added.')
-            ->given($tested_instance = new TestedClass(static::getObjects()))
-            ->and($expression = new ExpressionIndex(function ($item) {
-                $reflection = new \ReflectionObject($item);
-                foreach (['price', 'category'] as $property) {
-                    $property_object = $reflection->getProperty($property);
-                    if ($property_object instanceof \ReflectionProperty && !$property_object->isPublic()) {
-                        throw new \RuntimeException(sprintf('Undefined public property: %s', $property));
-                    }
-                }
-
-                return $item->price > 50 && $item->category = 'enceintes';
+            ->given($tested_instance = new TestedClass(static::getPlanetCollection()))
+            ->and($expression = new ExpressionIndex(function (Planet $planet) {
+                return strtolower($planet->getSystem()) === 'solar system';
             }))
             ->when($res = $tested_instance->addExpressionIndex($expression))
                 ->object($res)->isInstanceOf(TestedClass::class)
-
-            ->assert('Exception when trying to index an unknown property.')
-            ->exception(function () use ($tested_instance, $expression) {
-                $tested_instance->addExpressionIndex(new ExpressionIndex(function ($item) {
-                    $reflection = new \ReflectionObject($item);
-                    foreach (['unknown', 'category'] as $property) {
-                        $property_object = $reflection->getProperty($property);
-                        if ($property_object instanceof \ReflectionProperty && !$property_object->isPublic()) {
-                            throw new \RuntimeException(sprintf('Undefined public property: %s', $property));
-                        }
-                    }
-
-                    return $item->unknown > 50 && $item->category = 'enceintes';
-                }));
-            })
-                ->isInstanceOf(\ReflectionException::class)->message->contains('Property unknown does not exist');
             ;
     }
 
@@ -174,40 +165,37 @@ class ObjectCollection extends test
     {
         $this
             ->assert('Use index to return results.')
-            ->given($tested_instance = new TestedClass(static::getObjects()))
-            ->and($expression = new ExpressionIndex(function ($item) {
-                $reflection = new \ReflectionObject($item);
-                foreach (['price', 'category'] as $property) {
-                    $property_object = $reflection->getProperty($property);
-                    if ($property_object instanceof \ReflectionProperty && !$property_object->isPublic()) {
-                        throw new \RuntimeException(sprintf('Undefined public property: %s', $property));
-                    }
-                }
-
-                return $item->price > 50 && $item->category = 'enceinte';
+            ->given($tested_instance = new TestedClass(static::getPlanetCollection()))
+            ->and($expression = new ExpressionIndex(function (Planet $planet) {
+                return strtolower($planet->getSystem()) === 'solar system';
             }))
             ->and($tested_instance->addExpressionIndex($expression))
             ->when($res = $tested_instance->findWhereExpression($expression, true))
                 ->object($res)->isInstanceOf(TestedClass::class)
                 ->boolean($this->collectionIsEmpty($res))->isFalse
-                ->boolean($this->contains($res, 1))->isTrue
-                ->boolean($this->contains($res, 2))->isTrue
-                ->boolean($this->contains($res, 3))->isFalse
-                ->boolean($this->contains($res, 4))->isFalse
-                ->boolean($this->contains($res, 5))->isFalse
+                ->boolean($this->containsPlanet($res, 'Earth'))->isTrue
+                ->boolean($this->containsPlanet($res, 'Mars'))->isTrue
+                ->boolean($this->containsPlanet($res, 'Venus'))->isTrue
+                ->boolean($this->containsPlanet($res, 'Kepler 186-f'))->isFalse
 
             ->when($res = $tested_instance->findWhereExpression($expression, false))
                 ->object($res)->isInstanceOf(TestedClass::class)
                 ->boolean($this->collectionIsEmpty($res))->isFalse
-                ->boolean($this->contains($res, 1))->isFalse
-                ->boolean($this->contains($res, 2))->isFalse
-                ->boolean($this->contains($res, 3))->isTrue
-                ->boolean($this->contains($res, 4))->isTrue
-                ->boolean($this->contains($res, 5))->isTrue
+                ->boolean($this->containsPlanet($res, 'Earth'))->isFalse
+                ->boolean($this->containsPlanet($res, 'Mars'))->isFalse
+                ->boolean($this->containsPlanet($res, 'Venus'))->isFalse
+                ->boolean($this->containsPlanet($res, 'Kepler 186-f'))->isTrue
 
-            ->when($res = $tested_instance->findWhereExpression($expression, '12'))
+            ->given($expression = new ExpressionIndex(function (Planet $planet) {
+                return strtolower($planet->getSystem()) === 'kepler 186 system';
+            }))
+            ->when($res = $tested_instance->findWhereExpression($expression, true))
                 ->object($res)->isInstanceOf(TestedClass::class)
-                ->boolean($this->collectionIsEmpty($res))->isTrue
+                ->boolean($this->collectionIsEmpty($res))->isFalse
+                ->boolean($this->containsPlanet($res, 'Earth'))->isFalse
+                ->boolean($this->containsPlanet($res, 'Mars'))->isFalse
+                ->boolean($this->containsPlanet($res, 'Venus'))->isFalse
+                ->boolean($this->containsPlanet($res, 'Kepler 186-f'))->isTrue
             ;
     }
 
@@ -230,13 +218,13 @@ class ObjectCollection extends test
 
     /**
      * @param TestedClass $collection
-     * @param int         $id
+     * @param string      $planet_name
      * @return bool
      */
-    protected function contains(TestedClass $collection, int $id): bool
+    protected function containsPlanet(TestedClass $collection, string $planet_name): bool
     {
-        foreach ($collection as $item) {
-            if ($item->id === $id) {
+        foreach ($collection as $planet) {
+            if ($planet->getName() === $planet_name) {
                 return true;
             }
         }

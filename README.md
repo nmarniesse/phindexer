@@ -36,7 +36,7 @@ Warning: the project is actually in dev status! So you have to add the repositor
 ```
 
 
-## Usage
+## Documentation
 
 ### Index and search on columns
 
@@ -63,3 +63,25 @@ foreach ($results as $result) {
 // Print rows with ids 1, 2 and 3.
 
 ```
+
+
+### Using objects
+
+
+$list = [
+   new Planet('Earth', 'Solar system'),
+   new Planet('Mars', 'Solar system'),
+   new Planet('Kepler 186-f', 'Kepler 186 system'),
+];
+
+$collection = new ObjectCollection($list);
+
+// Index with property
+$collection->addColumnIndex('system');
+$results = $collection->findWhere('system', 'Solar system');
+
+// Index with expression
+$collection->addExpressionIndex(new ExpressionIndex(function (Planet $planet) {
+    return $planet->getSystem() === 'Solar system';
+}));
+
