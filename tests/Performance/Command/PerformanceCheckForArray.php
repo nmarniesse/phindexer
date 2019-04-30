@@ -10,12 +10,15 @@
 namespace NMarniesse\Phindexer\Test\Performance\Command;
 
 use Faker\Factory;
-use NMarniesse\Phindexer\Collection\ArrayCollection;
-use NMarniesse\Phindexer\CollectionInterface;
+use NMarniesse\Phindexer\IndexType\ExpressionIndex;
+use NMarniesse\Phindexer\Test\Performance\Job\ClassicJob;
+use NMarniesse\Phindexer\Test\Performance\Job\JobInterface;
+use NMarniesse\Phindexer\Test\Performance\Job\PhindexerJob;
+use NMarniesse\Phindexer\Test\Performance\Job\Decorator\ProfilerJob;
+use NMarniesse\Phindexer\Test\Performance\Job\Decorator\RepetitiveJob;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -46,13 +49,6 @@ class PerformanceCheckForArray extends Command
                 'Number of searches on data.',
                 1000
             )
-            ->addOption(
-                'strategy',
-                's',
-                InputOption::VALUE_OPTIONAL,
-                'Search using given strategy: phindexer or classic).',
-                'phindexer'
-            )
         ;
     }
 
@@ -65,97 +61,72 @@ class PerformanceCheckForArray extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $memory_start = memory_get_usage();
-
         $output->write('Create fixtures... ');
         $array = $this->createDataFixtures($input->getArgument('elements'));
         $output->writeln('<info>OK</info>');
 
-        $strategy = $input->getOption('strategy');
-        if ($strategy === 'phindexer') {
-            $data = new ArrayCollection($array);
-            $data->addColumnIndex('first_name');
-            $data->addColumnIndex('email');
-        } else {
-            $data = $array;
-        }
+        $searches = $input->getArgument('searches');
 
-        $time_start = microtime(true);
-        $output->write('Job starts... ');
+        $column = 'first_name';
+        $expression = new ExpressionIndex(function ($item) use ($column) {
+            if (!array_key_exists($column, $item)) {
+                throw new \RuntimeException(sprintf('Undefined index: %s', $column));
+            }
+
+            return $item[$column];
+        });
 
         $faker = Factory::create();
-        $searches = $input->getArgument('searches');
-        for ($i = 0; $i < $searches / 2; $i++) {
-            $this->search($strategy, $data, 'first_name', $faker->firstName);
-            $this->search($strategy, $data, 'email', $faker->email);
-        }
+        $search_value = $faker->firstName;
 
-        $output->writeln('<info>OK</info>');
+        $output->writeln([
+            '',
+            sprintf(
+                'Start tests with data size [%d] and searches repetition [%d]...',
+                count($array),
+                $searches
+            ),
+        ]);
 
+        $phindexer_job = new PhindexerJob($array);
+        $classic_job   = new ClassicJob($array);
+
+        $this
+            ->runJob($output, $phindexer_job, $expression, $search_value, $searches)
+            ->runJob($output, $classic_job, $expression, $search_value, $searches)
+        ;
+    }
+
+    /**
+     * runJob
+     *
+     * @param OutputInterface $output
+     * @param JobInterface    $job
+     * @param ExpressionIndex $expression_index
+     * @param string          $search_value
+     * @param int             $repetition
+     * @return PerformanceCheckForArray
+     */
+    protected function runJob(
+        OutputInterface $output,
+        JobInterface $job,
+        ExpressionIndex $expression_index,
+        string $search_value,
+        int $repetition
+    ): self {
+        $profiler_job = new ProfilerJob(new RepetitiveJob($job, $repetition));
+
+        $profiler_job->run($expression_index, $search_value);
         $output->writeln([
             '',
             'Results',
             '-------',
-            sprintf('Strategy    : %s', $strategy),
-            sprintf('Data size   : %d', count($array)),
-            sprintf('Ran searches: %d', $searches),
-            sprintf('Memory used : %f MB', max((memory_get_usage() - $memory_start) / 1048576, 0)),
-            sprintf('Time        : %f seconds', microtime(true) - $time_start),
+            sprintf('Strategy   : %s', get_class($job)),
+            sprintf('Memory used: %f MB', $profiler_job->getConsumedMemory() / 1048576),
+            sprintf('Time       : %f seconds', $profiler_job->getDuration()),
         ]);
-    }
-
-    /**
-     * @param string   $strategy
-     * @param iterable $list
-     * @param string   $column
-     * @param string   $search_value
-     * @return PerformanceCheckForArray
-     */
-    protected function search(string $strategy, iterable $list, string $column, string $search_value): self
-    {
-        if ($strategy === 'phindexer') {
-            $this->searchInDataUsingPhindexer($list, $column, $search_value);
-        } else {
-            $this->searchInDataUsingClassicStrategy($list, $column, $search_value);
-        }
 
         return $this;
-    }
-
-    /**
-     * searchInDataUsingPhindexer
-     *
-     * @param CollectionInterface $collection
-     * @param string              $column
-     * @param string              $value
-     * @return CollectionInterface
-     */
-    protected function searchInDataUsingPhindexer(
-        CollectionInterface $collection,
-        string $column,
-        string $value
-    ): CollectionInterface {
-        return $collection->findWhere($column, $value);
-    }
-
-    /**
-     * searchInDataUsingClassicStrategy
-     *
-     * @param iterable $data
-     * @param string   $column
-     * @param string   $value
-     * @return array
-     */
-    protected function searchInDataUsingClassicStrategy(iterable $data, string $column, string $value): array
-    {
-        $res = [];
-        foreach ($data as $row) {
-            if ($row[$column] === $value) {
-                $res[] = $row;
-            }
-        }
-
-        return $res;
     }
 
     /**
