@@ -38,7 +38,7 @@ abstract class AbstractCollection implements \Iterator, CollectionInterface
     /**
      * ArrayCollection constructor.
      *
-     * @param iterable               $iterator
+     * @param iterable        $iterator
      * @param Constraint|null $constraint
      */
     public function __construct(iterable $iterator, Constraint $constraint = null)
