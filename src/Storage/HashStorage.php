@@ -14,12 +14,12 @@ use NMarniesse\Phindexer\CollectionInterface;
 use NMarniesse\Phindexer\IndexType\ExpressionIndex;
 
 /**
- * Class BtreeIndex
+ * Class HashStorage
  *
  * @package NMarniesse\Phindexer\Storage
  * @author  Nicolas Marniesse <nicolas.marniesse@gmail.com>
  */
-class BtreeStorage implements StorageInterface
+class HashStorage implements StorageInterface
 {
     /**
      * @var array
@@ -32,7 +32,7 @@ class BtreeStorage implements StorageInterface
     private $expression_index;
 
     /**
-     * BtreeStorage constructor.
+     * HashStorage constructor.
      *
      * @param ExpressionIndex $expression_index
      */
