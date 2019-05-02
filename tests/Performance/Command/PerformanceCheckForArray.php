@@ -114,11 +114,14 @@ class PerformanceCheckForArray extends Command
         string $search_value,
         int $repetition
     ): self {
-        $profiler_job = new ProfilerJob(new RepetitiveJob($job, $repetition));
+        $output->writeln('');
+        $output->write('Launch tests... ');
 
+        $profiler_job = new ProfilerJob(new RepetitiveJob($job, $repetition));
         $profiler_job->run($expression_index, $search_value);
+
+        $output->writeln('<info>OK</info>');
         $output->writeln([
-            '',
             'Results',
             '-------',
             sprintf('Strategy   : %s', get_class($job)),
