@@ -68,7 +68,7 @@ class PerformanceCheckForArray extends Command
         $searches = $input->getArgument('searches');
 
         $column = 'first_name';
-        $expression = new ExpressionIndex(function ($item) use ($column) {
+        $expression_index = new ExpressionIndex(function ($item) use ($column) {
             if (!array_key_exists($column, $item)) {
                 throw new \RuntimeException(sprintf('Undefined index: %s', $column));
             }
@@ -88,12 +88,12 @@ class PerformanceCheckForArray extends Command
             ),
         ]);
 
-        $phindexer_job = new PhindexerJob($array);
+        $phindexer_job = new PhindexerJob($array, $expression_index);
         $classic_job   = new ClassicJob($array);
 
         $this
-            ->runJob($output, $phindexer_job, $expression, $search_value, $searches)
-            ->runJob($output, $classic_job, $expression, $search_value, $searches)
+            ->runJob($output, $phindexer_job, $expression_index, $search_value, $searches)
+            ->runJob($output, $classic_job, $expression_index, $search_value, $searches)
         ;
     }
 

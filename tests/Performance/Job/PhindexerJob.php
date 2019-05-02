@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace NMarniesse\Phindexer\Test\Performance\Job;
 
 use NMarniesse\Phindexer\Collection\ArrayCollection;
@@ -28,13 +27,25 @@ class PhindexerJob implements JobInterface
     private $collection;
 
     /**
+     * @var ExpressionIndex
+     */
+    private $expression_index;
+
+    /**
+     * @var bool
+     */
+    private $is_index_set = false;
+
+    /**
      * Job constructor.
      *
-     * @param array $collection
+     * @param array           $collection
+     * @param ExpressionIndex $expression_index
      */
-    public function __construct(array $collection)
+    public function __construct(array $collection, ExpressionIndex $expression_index)
     {
-        $this->collection = new ArrayCollection($collection);
+        $this->collection       = new ArrayCollection($collection);
+        $this->expression_index = $expression_index;
     }
 
     /**
@@ -44,6 +55,11 @@ class PhindexerJob implements JobInterface
      */
     public function run(ExpressionIndex $expression_index, string $search_value): iterable
     {
+        if (!$this->is_index_set) {
+            $this->collection->addExpressionIndex($this->expression_index);
+            $this->is_index_set = true;
+        }
+
         return $this->collection->findWhereExpression($expression_index, $search_value);
     }
 }
