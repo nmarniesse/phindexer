@@ -26,7 +26,7 @@ interface StorageInterface
 
     /**
      * @param mixed $item
-     * @return BtreeStorage
+     * @return HashStorage
      */
     public function addItemInStorage(&$item): StorageInterface;
 

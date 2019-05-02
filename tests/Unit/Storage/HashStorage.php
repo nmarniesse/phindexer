@@ -12,15 +12,15 @@ namespace NMarniesse\Phindexer\Test\Unit\Storage;
 use atoum\test;
 use NMarniesse\Phindexer\Collection\ArrayCollection;
 use NMarniesse\Phindexer\IndexType\ExpressionIndex;
-use NMarniesse\Phindexer\Storage\BtreeStorage as TestedClass;
+use NMarniesse\Phindexer\Storage\HashStorage as TestedClass;
 
 /**
- * Class BtreeStorage
+ * Class HashStorage
  *
  * @package NMarniesse\Phindexer\Test\Unit\Storage
  * @author  Nicolas Marniesse <nicolas.marniesse@gmail.com>
  */
-class BtreeStorage extends test
+class HashStorage extends test
 {
     /**
      * testConstruct

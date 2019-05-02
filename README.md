@@ -12,6 +12,7 @@ This projects helps you to index your data and retrieve them simply and quickly.
 ## Requirements
 
 - php 7.1
+- ext-json
 
 
 ## Install
@@ -66,7 +67,7 @@ foreach ($results as $result) {
 ### Using custom index
 
 Maybe you want index your data with more complex condition. You can pass the function you want with
-expression index:
+ExpressionIndex:
 
 ```php
 // Create the custom index
@@ -80,7 +81,7 @@ $collection->addExpressionIndex($expression_index);
 // Search using the index
 $results = $collection->findWhereExpression($expression_index, true);
 
-// Search the items that do not satisfied the expression index
+// Search the items that do not satisfy the expression index
 $results = $collection->findWhereExpression($expression_index, false);
 
 ```
@@ -101,7 +102,7 @@ $list = [
 
 $collection = new ObjectCollection($list);
 
-// Index with property (private properties can be indexed if method "get" is accessible, here method "getSystem")
+// Index with property (private properties can be indexed if property is public or method "get" is accessible, here method "getSystem")
 $collection->addPropertyIndex('system');
 $results = $collection->findWhere('system', 'Solar system');
 

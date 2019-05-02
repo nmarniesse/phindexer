@@ -13,7 +13,9 @@
         "doctrine/inflector": "^1.3"
     },
     "require-dev": {
-        "atoum/atoum" : "*"
+        "atoum/atoum" : "*",
+        "symfony/console": "^4.2",
+        "fzaninotto/faker": "^1.8"
     },
     "autoload": {
         "psr-4": {
@@ -22,7 +24,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "NMarniesse\\Phindexer\\Test\\Unit\\": "tests/Unit"
+            "NMarniesse\\Phindexer\\Test\\Unit\\": "tests/Unit",
+            "NMarniesse\\Phindexer\\Test\\Performance\\": "tests/Performance"
         }
     },
     "minimum-stability": "stable"

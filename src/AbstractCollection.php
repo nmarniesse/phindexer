@@ -10,7 +10,7 @@
 namespace NMarniesse\Phindexer;
 
 use NMarniesse\Phindexer\IndexType\ExpressionIndex;
-use NMarniesse\Phindexer\Storage\BtreeStorage;
+use NMarniesse\Phindexer\Storage\HashStorage;
 use NMarniesse\Phindexer\Storage\StorageInterface;
 use NMarniesse\Phindexer\Validator\ValidatorFactory;
 use Symfony\Component\Validator\Constraint;
@@ -38,7 +38,7 @@ abstract class AbstractCollection implements \Iterator, CollectionInterface
     /**
      * ArrayCollection constructor.
      *
-     * @param iterable               $iterator
+     * @param iterable        $iterator
      * @param Constraint|null $constraint
      */
     public function __construct(iterable $iterator, Constraint $constraint = null)
@@ -139,7 +139,7 @@ abstract class AbstractCollection implements \Iterator, CollectionInterface
      */
     public function addExpressionIndex(ExpressionIndex $expression): CollectionInterface
     {
-        $storage = new BtreeStorage($expression);
+        $storage = new HashStorage($expression);
         $storage->addCollectionInStorage($this);
         $this->index_storages[$expression->getFingerprint()] = $storage;
 
