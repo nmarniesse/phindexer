@@ -57,7 +57,7 @@ $collection = new ArrayCollection($list);
 $collection->addColumnIndex('category');
 $results = $collection->findWhere('category', 'enceinte');
 
-// Results is an new instance of ArrayCollection that contains the results
+// Results is a new instance of ArrayCollection that contains the results
 foreach ($results as $result) {
     print_r($result);
 }
@@ -67,7 +67,7 @@ foreach ($results as $result) {
 ### Using custom index
 
 Maybe you want index your data with more complex condition. You can pass the function you want with
-ExpressionIndex:
+`ExpressionIndex`:
 
 ```php
 // Create the custom index
@@ -83,11 +83,14 @@ $results = $collection->findWhereExpression($expression_index, true);
 
 // Search the items that do not satisfy the expression index
 $results = $collection->findWhereExpression($expression_index, false);
-
 ```
 
 
 ### Using collection of objects
+
+As the `ArrayCollection` is a collection of array, the `ObjectCollection` handles collection of... objects.  
+Instead of key index, you can index properties. Public properties and protected/private property if the getter function
+is available.
 
 ```php
 use NMarniesse\Phindexer\Collection\ObjectCollection;
@@ -102,7 +105,7 @@ $list = [
 
 $collection = new ObjectCollection($list);
 
-// Index with property (private properties can be indexed if property is public or method "get" is accessible, here method "getSystem")
+// Index with property
 $collection->addPropertyIndex('system');
 $results = $collection->findWhere('system', 'Solar system');
 
