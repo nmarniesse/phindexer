@@ -19,18 +19,24 @@ use NMarniesse\Phindexer\IndexType\ExpressionIndex;
 interface CollectionInterface
 {
     /**
+     * addItem
+     *
      * @param mixed $item
      * @return CollectionInterface
      */
     public function addItem($item): self;
 
     /**
+     * addExpressionIndex
+     *
      * @param ExpressionIndex $expression
      * @return CollectionInterface
      */
     public function addExpressionIndex(ExpressionIndex $expression): CollectionInterface;
 
     /**
+     * findWhereExpression
+     *
      * @param ExpressionIndex $expression
      * @param mixed           $value
      * @return CollectionInterface

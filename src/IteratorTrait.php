@@ -16,10 +16,14 @@ namespace NMarniesse\Phindexer;
  */
 trait IteratorTrait
 {
-    /** @var \iterable */
+    /**
+     * @var \iterable
+     */
     protected $iterator;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     protected $position = 0;
 
     /**
@@ -31,6 +35,8 @@ trait IteratorTrait
     }
 
     /**
+     * current
+     *
      * @return mixed
      */
     public function current()
@@ -39,6 +45,8 @@ trait IteratorTrait
     }
 
     /**
+     * key
+     *
      * @return int
      */
     public function key(): int
@@ -55,6 +63,8 @@ trait IteratorTrait
     }
 
     /**
+     * valid
+     *
      * @return bool
      */
     public function valid(): bool

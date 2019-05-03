@@ -39,6 +39,8 @@ class ExpressionIndex
     }
 
     /**
+     * getFingerprint
+     *
      * @return string
      */
     public function getFingerprint(): string
@@ -47,6 +49,8 @@ class ExpressionIndex
     }
 
     /**
+     * getExpressionResult
+     *
      * @param mixed $row
      * @return mixed
      */

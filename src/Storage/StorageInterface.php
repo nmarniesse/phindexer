@@ -19,18 +19,24 @@ use NMarniesse\Phindexer\CollectionInterface;
 interface StorageInterface
 {
     /**
+     * addCollectionInStorage
+     *
      * @param CollectionInterface $collection
      * @return StorageInterface
      */
     public function addCollectionInStorage(CollectionInterface $collection): StorageInterface;
 
     /**
+     * addItemInStorage
+     *
      * @param mixed $item
      * @return HashStorage
      */
     public function addItemInStorage(&$item): StorageInterface;
 
     /**
+     * getResults
+     *
      * @param mixed $value
      * @return array
      */

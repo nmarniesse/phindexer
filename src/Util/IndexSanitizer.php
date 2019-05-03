@@ -18,6 +18,8 @@ namespace NMarniesse\Phindexer\Util;
 class IndexSanitizer
 {
     /**
+     * sanitize
+     *
      * @param mixed $value
      * @return string
      */

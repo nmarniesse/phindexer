@@ -7,7 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace NMarniesse\Phindexer\Validator;
 
 use Symfony\Component\Validator\Validation;
@@ -22,6 +21,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class ValidatorFactory
 {
     /**
+     * getValidator
+     *
      * @return ValidatorInterface
      */
     public static function getValidator(): ValidatorInterface
