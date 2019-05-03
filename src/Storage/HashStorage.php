@@ -10,7 +10,7 @@
 namespace NMarniesse\Phindexer\Storage;
 
 use NMarniesse\Phindexer\Util\IndexSanitizer;
-use NMarniesse\Phindexer\CollectionInterface;
+use NMarniesse\Phindexer\Collection;
 use NMarniesse\Phindexer\IndexType\ExpressionIndex;
 
 /**
@@ -42,10 +42,10 @@ class HashStorage implements StorageInterface
     }
 
     /**
-     * @param CollectionInterface $collection
+     * @param Collection $collection
      * @return StorageInterface
      */
-    public function addCollectionInStorage(CollectionInterface $collection): StorageInterface
+    public function addCollectionInStorage(Collection $collection): StorageInterface
     {
         foreach ($collection as $item) {
             $this->addItemInStorage($item);

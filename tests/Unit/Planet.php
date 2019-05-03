@@ -7,13 +7,12 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
-namespace NMarniesse\Phindexer\Test\Unit\Collection;
+namespace NMarniesse\Phindexer\Test\Unit;
 
 /**
  * Class Planet
  *
- * @package NMarniesse\Phindexer\Test\Unit\Collection
+ * @package NMarniesse\Phindexer\Test\Unit
  * @author Nicolas Marniesse <nicolas.marniesse@gmail.com>
  */
 class Planet

@@ -10,6 +10,7 @@
 namespace NMarniesse\Phindexer;
 
 use NMarniesse\Phindexer\IndexType\ExpressionIndex;
+use NMarniesse\Phindexer\IndexType\KeyExpressionIndex;
 use NMarniesse\Phindexer\Storage\HashStorage;
 use NMarniesse\Phindexer\Storage\StorageInterface;
 use NMarniesse\Phindexer\Validator\ValidatorFactory;
@@ -21,7 +22,7 @@ use Symfony\Component\Validator\Constraint;
  * @package NMarniesse\Phindexer
  * @author  Nicolas Marniesse <nicolas.marniesse@gmail.com>
  */
-abstract class AbstractCollection implements \Iterator, CollectionInterface
+class Collection implements \Iterator
 {
     use IteratorTrait;
 
@@ -31,12 +32,17 @@ abstract class AbstractCollection implements \Iterator, CollectionInterface
     protected $index_storages = [];
 
     /**
+     * @var array
+     */
+    protected $index_fingerprints = [];
+
+    /**
      * @var Constraint|null
      */
     protected $constraint;
 
     /**
-     * ArrayCollection constructor.
+     * Collection constructor.
      *
      * @param iterable        $iterator
      * @param Constraint|null $constraint
@@ -62,9 +68,9 @@ abstract class AbstractCollection implements \Iterator, CollectionInterface
 
     /**
      * @param $item
-     * @return CollectionInterface
+     * @return Collection
      */
-    protected function validate($item): CollectionInterface
+    protected function validate($item): Collection
     {
         if ($this->constraint instanceof Constraint) {
             $errors = ValidatorFactory::getValidator()->validate($item, $this->constraint);
@@ -79,9 +85,9 @@ abstract class AbstractCollection implements \Iterator, CollectionInterface
 
     /**
      * @param mixed $item
-     * @return CollectionInterface
+     * @return Collection
      */
-    public function addItem($item): CollectionInterface
+    public function addItem($item): Collection
     {
         $this->validate($item);
 
@@ -104,9 +110,9 @@ abstract class AbstractCollection implements \Iterator, CollectionInterface
 
     /**
      * @param $item
-     * @return CollectionInterface
+     * @return Collection
      */
-    private function indexItem($item): CollectionInterface
+    private function indexItem($item): Collection
     {
         /** @var StorageInterface $storage */
         foreach ($this->index_storages as $storage) {
@@ -117,11 +123,73 @@ abstract class AbstractCollection implements \Iterator, CollectionInterface
     }
 
     /**
+     * addKeyIndex
+     *
+     * @param string $key
+     * @return Collection
+     */
+    public function addKeyIndex(string $key): Collection
+    {
+        $expression = new ExpressionIndex(new KeyExpressionIndex($key));
+
+        $this->index_fingerprints[$key] = $expression->getFingerprint();
+
+        return $this->addExpressionIndex($expression);
+    }
+
+    /**
+     * findWhere
+     *
+     * @param string $key
+     * @param string $value
+     * @return Collection
+     */
+    public function findWhere(string $key, string $value): Collection
+    {
+        $fingerprint = $this->index_fingerprints[$key] ?? null;
+        if ($fingerprint === null) {
+            $this->addKeyIndex($key);
+            $fingerprint = $this->index_fingerprints[$key] ?? null;
+        }
+
+        $storage = $this->index_storages[$fingerprint] ?? null;
+        if (!$storage instanceof StorageInterface) {
+            throw new \RuntimeException(sprintf("Storage not found for key index '%s'.", $key));
+        }
+
+        return new Collection($storage->getResults($value));
+    }
+
+    /**
+     * addKeyUniqueIndex
+     *
+     * @param string $key
+     * @return Collection
+     */
+    public function addKeyUniqueIndex(string $key): Collection
+    {
+        throw new \RuntimeException('Not implemented yet.');
+    }
+
+    /**
+     * @param ExpressionIndex $expression
+     * @return Collection
+     */
+    public function addExpressionIndex(ExpressionIndex $expression): Collection
+    {
+        $storage = new HashStorage($expression);
+        $storage->addCollectionInStorage($this);
+        $this->index_storages[$expression->getFingerprint()] = $storage;
+
+        return $this;
+    }
+
+    /**
      * @param ExpressionIndex $expression
      * @param mixed           $value
-     * @return CollectionInterface
+     * @return Collection
      */
-    public function findWhereExpression(ExpressionIndex $expression, $value): CollectionInterface
+    public function findWhereExpression(ExpressionIndex $expression, $value): Collection
     {
         if (!array_key_exists($expression->getFingerprint(), $this->index_storages)) {
             $this->addExpressionIndex($expression);
@@ -131,18 +199,5 @@ abstract class AbstractCollection implements \Iterator, CollectionInterface
         $class_name = get_class($this);
 
         return new $class_name($results, $this->constraint);
-    }
-
-    /**
-     * @param ExpressionIndex $expression
-     * @return CollectionInterface
-     */
-    public function addExpressionIndex(ExpressionIndex $expression): CollectionInterface
-    {
-        $storage = new HashStorage($expression);
-        $storage->addCollectionInStorage($this);
-        $this->index_storages[$expression->getFingerprint()] = $storage;
-
-        return $this;
     }
 }
