@@ -10,7 +10,7 @@
 namespace NMarniesse\Phindexer\Test\Unit\Storage;
 
 use atoum\test;
-use NMarniesse\Phindexer\Collection\ArrayCollection;
+use NMarniesse\Phindexer\Collection;
 use NMarniesse\Phindexer\IndexType\ExpressionIndex;
 use NMarniesse\Phindexer\Storage\HashStorage as TestedClass;
 
@@ -87,7 +87,7 @@ class HashStorage extends test
             })
             ->and($expression_index = new ExpressionIndex($callable))
             ->and($tested_instance = new TestedClass($expression_index))
-            ->and($collection = new ArrayCollection([
+            ->and($collection = new Collection([
                 ['id' => 12],
                 ['id' => 20],
             ]))
@@ -95,7 +95,7 @@ class HashStorage extends test
                 ->object($res)->isInstanceOf(TestedClass::class)
 
             ->assert('Add bad item in the storage.')
-            ->and($collection = new ArrayCollection([
+            ->and($collection = new Collection([
                 ['name' => 'test'],
                 ['name' => 'test2'],
             ]))
@@ -122,7 +122,7 @@ class HashStorage extends test
             })
             ->and($expression_index = new ExpressionIndex($callable))
             ->and($tested_instance = new TestedClass($expression_index))
-            ->and($collection = new ArrayCollection([
+            ->and($collection = new Collection([
                 ['id' => 12],
                 ['id' => 20],
             ]))

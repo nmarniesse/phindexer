@@ -9,8 +9,7 @@
  */
 namespace NMarniesse\Phindexer\Test\Performance\Job;
 
-use NMarniesse\Phindexer\Collection\ArrayCollection;
-use NMarniesse\Phindexer\CollectionInterface;
+use NMarniesse\Phindexer\Collection;
 use NMarniesse\Phindexer\IndexType\ExpressionIndex;
 
 /**
@@ -22,7 +21,7 @@ use NMarniesse\Phindexer\IndexType\ExpressionIndex;
 class PhindexerJob implements JobInterface
 {
     /**
-     * @var CollectionInterface
+     * @var Collection
      */
     private $collection;
 
@@ -44,7 +43,7 @@ class PhindexerJob implements JobInterface
      */
     public function __construct(array $collection, ExpressionIndex $expression_index)
     {
-        $this->collection       = new ArrayCollection($collection);
+        $this->collection       = new Collection($collection);
         $this->expression_index = $expression_index;
     }
 

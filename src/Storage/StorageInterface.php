@@ -9,7 +9,7 @@
  */
 namespace NMarniesse\Phindexer\Storage;
 
-use NMarniesse\Phindexer\CollectionInterface;
+use NMarniesse\Phindexer\Collection;
 
 /**
  * Interface StorageInterface
@@ -21,10 +21,10 @@ interface StorageInterface
     /**
      * addCollectionInStorage
      *
-     * @param CollectionInterface $collection
+     * @param Collection $collection
      * @return StorageInterface
      */
-    public function addCollectionInStorage(CollectionInterface $collection): StorageInterface;
+    public function addCollectionInStorage(Collection $collection): StorageInterface;
 
     /**
      * addItemInStorage

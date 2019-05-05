@@ -37,27 +37,56 @@ Warning: the project is actually in dev status! So you have to add the repositor
 ```
 
 
+## Performances
+
+Here is some tests to check the performance. First we create a collection of 10,000 items then we launch 
+1000 searches on it.
+The `PhindexerJob` uses this lib to index the items, the `ClassicJob` do not index and iterates on items on each
+searches. The results vary depending on the computer.  
+
+```
+$ php ./tests/Performance/console performance:array:launch 10000 1000
+Create fixtures... OK
+
+Start tests with data size [10000] and searches repetition [1000]...
+
+Launch tests... OK
+Results
+-------
+Strategy   : NMarniesse\Phindexer\Test\Performance\Job\PhindexerJob
+Memory used: 2.147781 MB
+Time       : 0.042447 seconds
+
+Launch tests... OK
+Results
+-------
+Strategy   : NMarniesse\Phindexer\Test\Performance\Job\ClassicJob
+Memory used: 0.000359 MB
+Time       : 11.652977 seconds
+```
+
+
 ## Documentation
 
-### Index and search on a collection of associative arrays
+### Index and search on a collection
 
 ```php
-use NMarniesse\Phindexer\Collection\ArrayCollection;
+use NMarniesse\Phindexer\Collection\Collection;
 
 $list = [
-    ['id' => 1, 'name' => 'A', 'category' => 'enceinte', 'price' => 60],
-    ['id' => 2, 'name' => 'B', 'category' => 'enceinte', 'price' => 80],
-    ['id' => 3, 'name' => 'C', 'category' => 'ampli', 'price' => 10],
-    ['id' => 4, 'name' => 'D', 'category' => 'enceinte', 'price' => 40],
-    ['id' => 5, 'name' => 'E', 'category' => null, 'price' => 50],
+    ['name' => 'A', 'color' => 'green', 'price' => 60],
+    ['name' => 'B', 'color' => 'green', 'price' => 80],
+    ['name' => 'C', 'color' => 'blue', 'price' => 10],
+    ['name' => 'D', 'color' => 'green', 'price' => 40],
+    ['name' => 'E', 'color' => 'red', 'price' => 50],
 ];
 
-$collection = new ArrayCollection($list);
+$collection = new Collection($list);
 
-$collection->addColumnIndex('category');
-$results = $collection->findWhere('category', 'enceinte');
+$collection->addKeyIndex('color');
+$results = $collection->findWhere('color', 'green');
 
-// Results is a new instance of ArrayCollection that contains the results
+// Results is a new instance of Collection that contains the results
 foreach ($results as $result) {
     print_r($result);
 }
@@ -72,7 +101,7 @@ Maybe you want index your data with more complex condition. You can pass the fun
 ```php
 // Create the custom index
 $expression_index = new ExpressionIndex(function (array $item) {
-    return $item['category'] === 'enceinte' && $item['price'] <= 50;
+    return $item['color'] === 'green' && $item['price'] <= 50;
 });
 
 // Add the index in your collection
@@ -88,12 +117,13 @@ $results = $collection->findWhereExpression($expression_index, false);
 
 ### Using collection of objects
 
-As the `ArrayCollection` is a collection of array, the `ObjectCollection` handles collection of... objects.  
-Instead of key index, you can index properties. Public properties and protected/private property if the getter function
-is available.
+
+The `Collection` class can also contains a set of objects. You can even mix objects and associative arrays.  
+When you index by key, the system tries to index the property. It can be a public properties or protected/private
+property if the getter function is available.  
 
 ```php
-use NMarniesse\Phindexer\Collection\ObjectCollection;
+use NMarniesse\Phindexer\Collection\Collection;
 use NMarniesse\Phindexer\IndexType\ExpressionIndex;
 
 // $list can be an array or an iterator
@@ -103,33 +133,33 @@ $list = [
    new Planet('Kepler 186-f', 'Kepler 186 system'),
 ];
 
-$collection = new ObjectCollection($list);
+$collection = new Collection($list);
 
 // Index with property
-$collection->addPropertyIndex('system');
+$collection->addKeyIndex('system');
 $results = $collection->findWhere('system', 'Solar system');
 
 // Index with custom expression
 $expression_index = new ExpressionIndex(function (Planet $planet) {
-    return $planet->getSystem() === 'Solar system';
+    return strpos(strtolower($planet->getSystem()), 'solar') !== false;
 });
 $collection->addExpressionIndex($expression_index);
 $results = $collection->findWhereExpression($expression_index, true);
 ```
 
 
-### Add items in a collection of array/object
+### Add items in a collection
 
 Once the collection is initialize, you can add items in it. You can even create an empty collection
-in one hand and add items in other hand. Added items are of course indexed the same way.   
+in one hand and add items in other hand. Added items are indexed the same way.   
 
-Here is an example with `ObjectCollection`, the same behavior exists with `ArrayCollection`:
+Here is an example with `Collection`, the same behavior exists with `Collection`:
 
 ```php
-use NMarniesse\Phindexer\Collection\ObjectCollection;
+use NMarniesse\Phindexer\Collection\Collection;
 
-$collection = new ObjectCollection([]);
-$collection->addPropertyIndex('system');
+$collection = new Collection([]);
+$collection->addKeyIndex('system');
 
 $collection->addItem(new Planet('Earth', 'Solar system'));
 $collection->addItem(new Planet('Mars', 'Solar system'));
@@ -141,20 +171,22 @@ $results = $collection->findWhere('system', 'Solar system');
 
 ### Validation constraint
 
-If you need to ensure the items are always good, you can specified some constraints in your collection.  
+If you need to ensure the items have always the good structure, or the same type, you can specified some constraints
+in your collection.  
 The validation is checked on each items when the collection is instantiated, and on each item you add further.
 
 ```php
-use NMarniesse\Phindexer\Collection\ObjectCollection;
+use NMarniesse\Phindexer\Collection\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 
 // Valiation ok.
-$collection = new ObjectCollection([new Planet('Earth', 'Solar system')], new Assert\Type(['type' => Planet::class]));
+$constraint = new Assert\Type(['type' => Planet::class]);
+$collection = new Collection([new Planet('Earth', 'Solar system')], $constraint);
 
 // Valiation ok.
 $collection->addItem(new Planet('Mars', 'Solar system'));
 $collection->addItem(new Planet('Kepler 186-f', 'Kepler 186 system'));
 
-// Valiation KO.
+// Valiation fails.
 $collection->addItem(new Star('Sun'));
 ```
