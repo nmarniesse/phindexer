@@ -59,6 +59,8 @@ class Collection implements \Iterator
     }
 
     /**
+     * getIterator
+     *
      * @return iterable
      */
     public function getIterator(): iterable
@@ -67,6 +69,8 @@ class Collection implements \Iterator
     }
 
     /**
+     * validate
+     *
      * @param $item
      * @return Collection
      */
@@ -84,6 +88,8 @@ class Collection implements \Iterator
     }
 
     /**
+     * addItem
+     *
      * @param mixed $item
      * @return Collection
      */
@@ -109,6 +115,8 @@ class Collection implements \Iterator
     }
 
     /**
+     * indexItem
+     *
      * @param $item
      * @return Collection
      */
@@ -172,6 +180,8 @@ class Collection implements \Iterator
     }
 
     /**
+     * addExpressionIndex
+     *
      * @param ExpressionIndex $expression
      * @return Collection
      */
@@ -185,6 +195,8 @@ class Collection implements \Iterator
     }
 
     /**
+     * findWhereExpression
+     *
      * @param ExpressionIndex $expression
      * @param mixed           $value
      * @return Collection
@@ -195,9 +207,8 @@ class Collection implements \Iterator
             $this->addExpressionIndex($expression);
         }
 
-        $results    = $this->index_storages[$expression->getFingerprint()]->getResults($value);
-        $class_name = get_class($this);
+        $results = $this->index_storages[$expression->getFingerprint()]->getResults($value);
 
-        return new $class_name($results, $this->constraint);
+        return new Collection($results, $this->constraint);
     }
 }
