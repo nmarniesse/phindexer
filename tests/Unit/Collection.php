@@ -46,11 +46,11 @@ class Collection extends test
     public static function getObjectList(): array
     {
         return [
-            new Planet('Earth', 'Solar system', 365),
-            new Planet('Mars', 'Solar system', 686.885),
-            new Planet('Venus', 'Solar system', 583.92),
-            new Planet('Saturn', 'Solar system', 10754),
-            new Planet('Kepler 186-f', 'Kepler 186 system', 129.9),
+            new Planet(1, 'Earth', 'Solar system', 365),
+            new Planet(2, 'Mars', 'Solar system', 686.885),
+            new Planet(3, 'Venus', 'Solar system', 583.92),
+            new Planet(4, 'Saturn', 'Solar system', 10754),
+            new Planet(5, 'Kepler 186-f', 'Kepler 186 system', 129.9),
         ];
     }
 
@@ -63,10 +63,10 @@ class Collection extends test
     {
         return new \ArrayIterator([
             ['id' => 1, 'name' => 'Earth', 'system' => 'Solar system', 'period_in_days' => 365],
-            new Planet('Mars', 'Solar system', 686.885),
-            new Planet('Venus', 'Solar system', 583.92),
+            new Planet(2, 'Mars', 'Solar system', 686.885),
+            new Planet(3, 'Venus', 'Solar system', 583.92),
             ['id' => 4, 'name' => 'Saturn', 'system' => 'Solar system', 'period_in_days' => 10754],
-            new Planet('Kepler 186-f', 'Kepler 186 system', 129.9),
+            new Planet(5, 'Kepler 186-f', 'Kepler 186 system', 129.9),
         ]);
     }
 
@@ -166,17 +166,25 @@ class Collection extends test
 
     /**
      * testFindWhere
+     *
+     * @param iterable $list
+     *
+     * @dataProvider listDataProvider
      */
-    public function testFindWhere()
+    public function testFindWhere(iterable $list)
     {
         $this
             ->assert('Use index to return rows kinked to a category.')
-            ->given($tested_instance = new TestedClass(static::getAssociativeArrayList()))
+            ->given($tested_instance = new TestedClass($list))
             ->and($tested_instance->addKeyIndex('system'))
             ->when($res = $tested_instance->findWhere('system', 'Solar system'))
                 ->object($res)->isInstanceOf(TestedClass::class)
                 ->boolean($this->collectionIsEmpty($res))->isFalse
-                ->boolean($this->checkResults($res, 'system', 'Solar system'))->isTrue
+                ->boolean($this->contains($res, 1))->isTrue
+                ->boolean($this->contains($res, 2))->isTrue
+                ->boolean($this->contains($res, 3))->isTrue
+                ->boolean($this->contains($res, 4))->isTrue
+                ->boolean($this->contains($res, 5))->isFalse
 
             ->when($res = $tested_instance->findWhere('system', 'unknown system'))
                 ->object($res)->isInstanceOf(TestedClass::class)
@@ -233,20 +241,26 @@ class Collection extends test
 
     /**
      * testFindWhereExpression
+     *
+     * @param iterable $list
+     *
+     * @dataProvider listDataProvider
      */
-    public function testFindWhereExpression()
+    public function testFindWhereExpression(iterable $list)
     {
         $this
             ->assert('Use index to return results.')
-            ->given($tested_instance = new TestedClass(static::getAssociativeArrayList()))
+            ->given($tested_instance = new TestedClass($list))
             ->and($expression = new ExpressionIndex(function ($item) {
-                foreach (['name', 'system'] as $key) {
-                    if (!array_key_exists($key, $item)) {
-                        throw new \RuntimeException(sprintf('Undefined index: %s', $key));
-                    }
+                if (is_array($item)) {
+                    return strpos($item['name'], 'E') === 0 && $item['system'] === 'Solar system';
                 }
 
-                return strpos($item['name'], 'E') === 0 && $item['system'] = 'Solar system';
+                if ($item instanceof Planet) {
+                    return strpos($item->getName(), 'E') === 0 && $item->getSystem() === 'Solar system';
+                }
+
+                throw new \RuntimeException('Type is not handled.');
             }))
             ->and($tested_instance->addExpressionIndex($expression))
             ->when($res = $tested_instance->findWhereExpression($expression, true))
@@ -324,23 +338,8 @@ class Collection extends test
     }
 
     /**
-     * @param TestedClass $collection
-     * @param string      $key
-     * @param string      $value
-     * @return bool
-     */
-    protected function checkResults(TestedClass $collection, string $key, string $value): bool
-    {
-        foreach ($collection as $item) {
-            if ($item[$key] !== $value) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
+     * contains
+     *
      * @param TestedClass $collection
      * @param int         $id
      * @return bool
@@ -348,7 +347,11 @@ class Collection extends test
     protected function contains(TestedClass $collection, int $id): bool
     {
         foreach ($collection as $item) {
-            if ($item['id'] === $id) {
+            if (is_array($item) && $item['id'] === $id) {
+                return true;
+            }
+
+            if (is_object($item) && $item->getId('id') === $id) {
                 return true;
             }
         }
@@ -357,6 +360,8 @@ class Collection extends test
     }
 
     /**
+     * collectionIsEmpty
+     *
      * @param TestedClass $collection
      * @return bool
      */
