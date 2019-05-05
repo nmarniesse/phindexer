@@ -3,7 +3,7 @@
 PHP data indexer that speeds up your data operations.  
 
 When you need to filter or search item from a collection, the operation could take time and effort to
-retrieve your data. And unless you index your data manually (with a group by strategy for example) the 
+retrieve your data. And unless you index your data manually (with a hash strategy for example) the 
 operation could slow down your program drastically.  
 
 This projects helps you to index your data and retrieve them simply and quickly.  
