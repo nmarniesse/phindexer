@@ -17,23 +17,8 @@ This projects helps you to index your data and retrieve them simply and quickly.
 
 ## Install
 
-Warning: the project is actually in dev status! So you have to add the repository manually:
-
-```json
-{
-   ...
-   "repositories": [
-     {
-       "type": "vcs",
-       "url": "git@github.com:nmarniesse/phindexer.git"
-     }
-   ],
-   "require": {
-     ...
-     "nmarniesse/phindexer": "dev-master"
-   }
-   ...
- }
+```bash
+composer require nmarniesse/phindexer
 ```
 
 
