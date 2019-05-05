@@ -37,6 +37,35 @@ Warning: the project is actually in dev status! So you have to add the repositor
 ```
 
 
+## Performances
+
+Here is some tests to check the performance. First we create a collection of 10,000 items then we launch 
+1000 searches on it.
+The `PhindexerJob` uses this lib to index the items, the `ClassicJob` do not index and iterates on items on each
+searches. The results vary depending on the computer.  
+
+```
+$ php ./tests/Performance/console performance:array:launch 10000 1000
+Create fixtures... OK
+
+Start tests with data size [10000] and searches repetition [1000]...
+
+Launch tests... OK
+Results
+-------
+Strategy   : NMarniesse\Phindexer\Test\Performance\Job\PhindexerJob
+Memory used: 2.147781 MB
+Time       : 0.042447 seconds
+
+Launch tests... OK
+Results
+-------
+Strategy   : NMarniesse\Phindexer\Test\Performance\Job\ClassicJob
+Memory used: 0.000359 MB
+Time       : 11.652977 seconds
+```
+
+
 ## Documentation
 
 ### Index and search on a collection
